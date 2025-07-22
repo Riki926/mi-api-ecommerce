@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba API E-commerce</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 5px; }
+        button:hover { background: #0056b3; }
+        .result { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        pre { background: #f1f3f4; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Prueba de API E-commerce</h1>
+    
+    <h2>Productos</h2>
+    <button onclick="getProducts()">GET - Obtener Productos</button>
+    <button onclick="createProduct()">POST - Crear Producto</button>
+    <button onclick="getProduct(1)">GET - Obtener Producto ID 1</button>
+    
+    <h2>Carritos</h2>
+    <button onclick="createCart()">POST - Crear Carrito</button>
+    <button onclick="getCart(1)">GET - Obtener Carrito ID 1</button>
+    <button onclick="addToCart(1, 1)">POST - Agregar Producto al Carrito</button>
+    
+    <div id="result" class="result">
+        <h3>Resultado:</h3>
+        <pre id="output">Haz clic en un botón para probar...</pre>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('output').textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // Productos
+        function getProducts() {
+            makeRequest(`${API_BASE}/products`);
+        }
+        
+        function createProduct() {
+            const product = {
+                title: "Smartphone Samsung",
+                description: "Smartphone con pantalla de 6.1 pulgadas",
+                code: "SAM001",
+                price: 599.99,
+                stock: 25,
+                category: "Electrónicos",
+                thumbnails: ["samsung1.jpg", "samsung2.jpg"]
+            };
+            
+            makeRequest(`${API_BASE}/products`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(product)
+            });
+        }
+        
+        function getProduct(id) {
+            makeRequest(`${API_BASE}/products/${id}`);
+        }
+        
+        // Carritos
+        function createCart() {
+            makeRequest(`${API_BASE}/carts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+        
+        function getCart(id) {
+            makeRequest(`${API_BASE}/carts/${id}`);
+        }
+        
+        function addToCart(cartId, productId) {
+            makeRequest(`${API_BASE}/carts/${cartId}/product/${productId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+    </script>
+</body>
+</html> 
