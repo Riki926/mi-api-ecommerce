@@ -1,4 +1,13 @@
-{
-  "products": [],
-  "nextId": 1
-} 
+[
+  {
+    "id": 1,
+    "title": "Smartphone Samsung",
+    "description": "Galaxy S21 Ultra 5G",
+    "code": "SAM001",
+    "price": 999.99,
+    "status": true,
+    "stock": 10,
+    "category": "Electrónicos",
+    "thumbnails": []
+  }
+]

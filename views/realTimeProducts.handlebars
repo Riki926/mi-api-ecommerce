@@ -1,0 +1,65 @@
+<div class="row">
+    <div class="col-md-4">
+        <h2>Agregar Producto</h2>
+        <form id="productForm" class="mb-4">
+            <div class="mb-3">
+                <label for="title" class="form-label">Título</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <textarea class="form-control" id="description" name="description" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="code" class="form-label">Código</label>
+                <input type="text" class="form-control" id="code" name="code" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Precio</label>
+                <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label for="stock" class="form-label">Stock</label>
+                <input type="number" class="form-control" id="stock" name="stock" required>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Categoría</label>
+                <input type="text" class="form-control" id="category" name="category" required>
+            </div>
+            <div class="mb-3">
+                <label for="thumbnails" class="form-label">URLs de Imágenes (separadas por coma)</label>
+                <input type="text" class="form-control" id="thumbnails" name="thumbnails">
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar Producto</button>
+        </form>
+    </div>
+
+    <div class="col-md-8">
+        <h2>Productos en Tiempo Real</h2>
+        <div id="productList" class="row">
+            {{#each products}}
+            <div class="col-md-6 mb-4 product-card" data-id="{{id}}">
+                <div class="card">
+                    {{#if thumbnails.[0]}}
+                    <img src="{{thumbnails.[0]}}" class="card-img-top" alt="{{title}}">
+                    {{/if}}
+                    <div class="card-body">
+                        <h5 class="card-title">{{title}}</h5>
+                        <p class="card-text">{{description}}</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Código: {{code}}</li>
+                            <li class="list-group-item">Precio: ${{price}}</li>
+                            <li class="list-group-item">Stock: {{stock}}</li>
+                            <li class="list-group-item">Categoría: {{category}}</li>
+                        </ul>
+                        <button class="btn btn-danger mt-2 delete-product" data-id="{{id}}">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+<script src="/js/realTimeProducts.js"></script>
+

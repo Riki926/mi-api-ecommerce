@@ -3,91 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba API E-commerce</title>
+    <title>Prueba de API E-commerce</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        button { background: #007bff; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 5px; }
-        button:hover { background: #0056b3; }
-        .result { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 10px 0; border-radius: 5px; }
-        pre { background: #f1f3f4; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 20px auto; 
+            padding: 0 20px; 
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .loading {
+            color: #007bff;
+            font-style: italic;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            background: #e6ffe6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
-    <h1>🧪 Prueba de API E-commerce</h1>
+    <h1>🛍️ Prueba de API E-commerce</h1>
+
+    <div style="background: #e7f3ff; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #007bff;">
+        <strong>💡 Consejos:</strong>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            <li>Asegúrate de que tu API esté ejecutándose en <code>http://localhost:8080</code></li>
+            <li>Usa el botón "Probar Conexión" para verificar que la API esté disponible</li>
+            <li>Los botones se deshabilitan durante las peticiones para evitar múltiples clics</li>
+        </ul>
+        <button onclick="testConnection()" style="background: #28a745;">🔗 Probar Conexión</button>
+    </div>
     
-    <h2>Productos</h2>
+    <h2>📦 Productos</h2>
     <button onclick="getProducts()">GET - Obtener Productos</button>
     <button onclick="createProduct()">POST - Crear Producto</button>
-    <button onclick="getProduct(1)">GET - Obtener Producto ID 1</button>
+    <button onclick="getProduct()">GET - Obtener Producto ID 1</button>
     
-    <h2>Carritos</h2>
+    <h2>🛒 Carritos</h2>
     <button onclick="createCart()">POST - Crear Carrito</button>
-    <button onclick="getCart(1)">GET - Obtener Carrito ID 1</button>
-    <button onclick="addToCart(1, 1)">POST - Agregar Producto al Carrito</button>
+    <button onclick="getCart()">GET - Obtener Carrito ID 1</button>
+    <button onclick="addToCart()">POST - Agregar Producto al Carrito</button>
     
-    <div id="result" class="result">
+    <div id="result">
         <h3>Resultado:</h3>
-        <pre id="output">Haz clic en un botón para probar...</pre>
+        <pre id="output">Haz clic en un botón para probar la API...</pre>
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:3001/api';
+        const API_URL = 'http://localhost:8080';
         
-        async function makeRequest(url, options = {}) {
-            try {
-                const response = await fetch(url, options);
-                const data = await response.json();
-                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('output').textContent = `Error: ${error.message}`;
+        // Función para mostrar resultados
+        function showResult(data, isError = false, isLoading = false) {
+            const output = document.getElementById('output');
+            if (isLoading) {
+                output.className = 'loading';
+                output.textContent = data;
+            } else {
+            output.className = isError ? 'error' : 'success';
+            output.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
             }
         }
-        
+
+        // Función para deshabilitar todos los botones
+        function setButtonsDisabled(disabled) {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = disabled);
+        }
+
+        // Función para hacer peticiones
+        async function makeRequest(url, options = {}) {
+            try {
+                console.log('Haciendo petición a:', url);
+                setButtonsDisabled(true);
+                showResult('Cargando...', false, true);
+
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+
+                let data;
+                const contentType = response.headers.get('content-type');
+
+                if (response.status === 204) {
+                    data = 'Operación exitosa (sin contenido)';
+                } else if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+                
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || `Error ${response.status}: ${response.statusText}`);
+                }
+
+                showResult(data);
+            } catch (error) {
+                console.error('Error en la petición:', error);
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    showResult('Error: No se puede conectar al servidor. Asegúrate de que la API esté ejecutándose en http://localhost:8080', true);
+                } else {
+                showResult(`Error: ${error.message}`, true);
+                }
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
         // Productos
         function getProducts() {
-            makeRequest(`${API_BASE}/products`);
+            makeRequest(`${API_URL}/api/products`);
         }
-        
+
         function createProduct() {
             const product = {
                 title: "Smartphone Samsung",
-                description: "Smartphone con pantalla de 6.1 pulgadas",
+                description: "Galaxy S21 Ultra 5G",
                 code: "SAM001",
-                price: 599.99,
-                stock: 25,
-                category: "Electrónicos",
-                thumbnails: ["samsung1.jpg", "samsung2.jpg"]
+                price: 999.99,
+                stock: 10,
+                category: "Electrónicos"
             };
-            
-            makeRequest(`${API_BASE}/products`, {
+
+            // Validación básica
+            if (!product.title || !product.code || product.price <= 0) {
+                showResult('Error: Datos del producto inválidos', true);
+                return;
+            }
+
+            makeRequest(`${API_URL}/api/products`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(product)
             });
         }
-        
-        function getProduct(id) {
-            makeRequest(`${API_BASE}/products/${id}`);
+
+        function getProduct() {
+            makeRequest(`${API_URL}/api/products/1`);
         }
-        
+
         // Carritos
         function createCart() {
-            makeRequest(`${API_BASE}/carts`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+            makeRequest(`${API_URL}/api/carts`, {
+                method: 'POST'
             });
         }
-        
-        function getCart(id) {
-            makeRequest(`${API_BASE}/carts/${id}`);
+
+        function getCart() {
+            makeRequest(`${API_URL}/api/carts/1`);
         }
-        
-        function addToCart(cartId, productId) {
-            makeRequest(`${API_BASE}/carts/${cartId}/product/${productId}`, {
+
+        function addToCart() {
+            const cartId = 1;
+            const productId = 1;
+            const quantity = 1;
+
+            // Validación básica
+            if (!cartId || !productId || quantity <= 0) {
+                showResult('Error: IDs de carrito y producto deben ser válidos, cantidad debe ser mayor a 0', true);
+                return;
+            }
+
+            makeRequest(`${API_URL}/api/carts/${cartId}/product/${productId}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                body: JSON.stringify({ quantity: quantity })
             });
         }
+
+        // Función para probar conexión con la API
+        async function testConnection() {
+            try {
+                setButtonsDisabled(true);
+                showResult('Probando conexión...', false, true);
+
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET'
+                });
+
+                if (response.ok) {
+                    showResult('✅ Conexión exitosa: La API está respondiendo correctamente');
+                } else {
+                    showResult(`⚠️ Conexión con problemas: ${response.status} ${response.statusText}`, true);
+                }
+            } catch (error) {
+                showResult('❌ Error de conexión: No se puede conectar al servidor', true);
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        // Inicialización
+            console.log('Página cargada. API URL:', API_URL);
     </script>
 </body>
-</html> 
+</html>

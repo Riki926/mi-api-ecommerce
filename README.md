@@ -1,107 +1,70 @@
-# API de E-commerce
+# API E-commerce
 
-API REST para gestionar productos y carritos de compra desarrollada con Node.js y Express.
+API REST para un sistema de e-commerce desarrollada con Node.js y Express.
 
-## Instalación
+## 🚀 Características
 
-1. Clona el repositorio
+- Gestión de productos (CRUD)
+- Gestión de carritos de compra
+- Interfaz de prueba en tiempo real
+- Documentación interactiva
+
+## 📋 Requisitos previos
+
+- Node.js (versión 14 o superior)
+- npm (incluido con Node.js)
+
+## 🔧 Instalación
+
+1. Clona el repositorio:
+```bash
+git clone [URL_DEL_REPOSITORIO]
+cd mi-api-ecommerce
+```
+
 2. Instala las dependencias:
 ```bash
 npm install
 ```
 
-## Ejecución
-
-### Modo desarrollo
+3. Inicia el servidor:
 ```bash
 npm run dev
 ```
 
-### Modo producción
-```bash
-npm start
-```
+El servidor estará disponible en `http://localhost:8080`
 
-El servidor se ejecutará en `http://localhost:8080`
+## 📱 Probar la API
 
-## Endpoints
+1. Abre el archivo `test.html` en tu navegador
+2. Usa los botones disponibles para probar las diferentes funcionalidades:
+   - Gestión de productos
+   - Gestión de carritos
+   - Operaciones en tiempo real
 
-### Productos (/api/products/)
-
-- **GET /** - Listar todos los productos
-- **GET /:pid** - Obtener producto por ID
-- **POST /** - Crear nuevo producto
-- **PUT /:pid** - Actualizar producto
-- **DELETE /:pid** - Eliminar producto
-
-#### Estructura de Producto
-```json
-{
-  "id": "number/string (autogenerado)",
-  "title": "string (requerido)",
-  "description": "string (requerido)",
-  "code": "string (requerido, único)",
-  "price": "number (requerido)",
-  "status": "boolean (default: true)",
-  "stock": "number (requerido)",
-  "category": "string (requerido)",
-  "thumbnails": "array de strings (opcional)"
-}
-```
-
-### Carritos (/api/carts/)
-
-- **POST /** - Crear nuevo carrito
-- **GET /:cid** - Listar productos del carrito
-- **POST /:cid/product/:pid** - Agregar producto al carrito
-
-#### Estructura de Carrito
-```json
-{
-  "id": "number/string (autogenerado)",
-  "products": [
-    {
-      "product": "id del producto",
-      "quantity": "number"
-    }
-  ]
-}
-```
-
-## Ejemplos de uso con cURL
-
-### Crear un producto
-```bash
-curl -X POST http://localhost:8080/api/products \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Producto de ejemplo",
-    "description": "Descripción del producto",
-    "code": "PROD001",
-    "price": 100,
-    "stock": 50,
-    "category": "Electrónicos"
-  }'
-```
-
-### Crear un carrito
-```bash
-curl -X POST http://localhost:8080/api/carts
-```
-
-### Agregar producto al carrito
-```bash
-curl -X POST http://localhost:8080/api/carts/1/product/1
-```
-
-## Persistencia
-
-Los datos se almacenan en archivos JSON:
-- `data/products.json` - Productos
-- `data/carts.json` - Carritos
-
-## Tecnologías utilizadas
+## 🛠️ Tecnologías utilizadas
 
 - Node.js
-- Express.js
-- Sistema de archivos (JSON) para persistencia 
+- Express
+- Socket.IO
+- Handlebars
+- CORS
+
+## 📄 Endpoints disponibles
+
+### Productos
+- `GET /api/products` - Obtener todos los productos
+- `POST /api/products` - Crear un nuevo producto
+- `GET /api/products/:id` - Obtener un producto por ID
+
+### Carritos
+- `POST /api/carts` - Crear un nuevo carrito
+- `GET /api/carts/:id` - Obtener un carrito por ID
+- `POST /api/carts/:cid/product/:pid` - Agregar producto al carrito
+
+## 👩‍💻 Desarrollo
+
+Para ejecutar en modo desarrollo con recarga automática:
+```bash
+npm run dev
+```
