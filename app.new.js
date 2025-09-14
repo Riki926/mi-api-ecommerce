@@ -26,6 +26,7 @@ const viewsRouter = require('./routes/views');
 const { connectMongo } = require('./src/db/mongo');
 const errorHandler = require('./middleware/error');
 const logger = require('./middleware/logger');
+const ErrorResponse = require('./utils/errorResponse');
 
 // Inicializar la aplicación
 const app = express();
@@ -61,16 +62,17 @@ app.use(cors(corsOptions));
 
 // Configurar rate limiting
 const limiter = rateLimit({
-  windowMs: process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000, // 15 minutos
-  max: process.env.RATE_LIMIT_MAX || 100, // límite de peticiones por ventana
-  message: 'Demasiadas peticiones desde esta IP, por favor intente de nuevo más tarde.'
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutos
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 100, // límite de peticiones por ventana
+  message: 'Demasiadas peticiones desde esta IP, por favor intente de nuevo más tarde.',
+  standardHeaders: true,
+  legacyHeaders: false
 });
 app.use('/api', limiter);
 
 // Logger de desarrollo
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
-  app.use(logger);
 }
 
 // Headers de seguridad
@@ -178,27 +180,9 @@ app.all('*', (req, res, next) => {
 // Middleware de manejo de errores
 app.use(errorHandler);
 
-// La configuración de WebSockets se maneja en la función configureWebSockets()
-
-// Healthcheck simple
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok' });
-});
-
-// Manejo de errores
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Algo salió mal!' });
-});
-
-// 404
-app.use((req, res) => {
-    res.status(404).json({ error: 'Ruta no encontrada' });
-});
-
 // Configuración de WebSockets
-io.on('connection', (socket) => {
-    // Enviar lista inicial si se requiere
+configureWebSockets();
+
 // Iniciar servidor
 async function startServer() {
   try {
@@ -216,9 +200,6 @@ async function startServer() {
     // Conectar a MongoDB
     console.log('\n🔍 Estableciendo conexión con MongoDB...');
     await connectMongo(mongoUri);
-    
-    // Configuración de WebSockets
-    configureWebSockets();
     
     // Iniciar el servidor HTTP
     const PORT = process.env.PORT || 8080;

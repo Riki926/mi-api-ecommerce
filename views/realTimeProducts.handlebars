@@ -1,65 +1,152 @@
 <div class="row">
-    <div class="col-md-4">
-        <h2>Agregar Producto</h2>
-        <form id="productForm" class="mb-4">
-            <div class="mb-3">
-                <label for="title" class="form-label">Título</label>
-                <input type="text" class="form-control" id="title" name="title" required>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Descripción</label>
-                <textarea class="form-control" id="description" name="description" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="code" class="form-label">Código</label>
-                <input type="text" class="form-control" id="code" name="code" required>
-            </div>
-            <div class="mb-3">
-                <label for="price" class="form-label">Precio</label>
-                <input type="number" class="form-control" id="price" name="price" step="0.01" required>
-            </div>
-            <div class="mb-3">
-                <label for="stock" class="form-label">Stock</label>
-                <input type="number" class="form-control" id="stock" name="stock" required>
-            </div>
-            <div class="mb-3">
-                <label for="category" class="form-label">Categoría</label>
-                <input type="text" class="form-control" id="category" name="category" required>
-            </div>
-            <div class="mb-3">
-                <label for="thumbnails" class="form-label">URLs de Imágenes (separadas por coma)</label>
-                <input type="text" class="form-control" id="thumbnails" name="thumbnails">
-            </div>
-            <button type="submit" class="btn btn-primary">Agregar Producto</button>
-        </form>
-    </div>
-
     <div class="col-md-8">
-        <h2>Productos en Tiempo Real</h2>
-        <div id="productList" class="row">
+        <h2>⚡ Productos en Tiempo Real</h2>
+        <div id="products-container">
             {{#each products}}
-            <div class="col-md-6 mb-4 product-card" data-id="{{id}}">
-                <div class="card">
-                    {{#if thumbnails.[0]}}
-                    <img src="{{thumbnails.[0]}}" class="card-img-top" alt="{{title}}">
-                    {{/if}}
-                    <div class="card-body">
-                        <h5 class="card-title">{{title}}</h5>
-                        <p class="card-text">{{description}}</p>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Código: {{code}}</li>
-                            <li class="list-group-item">Precio: ${{price}}</li>
-                            <li class="list-group-item">Stock: {{stock}}</li>
-                            <li class="list-group-item">Categoría: {{category}}</li>
-                        </ul>
-                        <button class="btn btn-danger mt-2 delete-product" data-id="{{id}}">Eliminar</button>
+            <div class="card mb-3" data-product-id="{{this._id}}">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            {{#if this.thumbnails}}
+                            <img src="{{this.thumbnails.0}}" class="img-fluid rounded" alt="{{this.title}}">
+                            {{else}}
+                            <img src="https://via.placeholder.com/150x100/6c757d/ffffff?text=Sin+Imagen" class="img-fluid rounded" alt="Sin imagen">
+                            {{/if}}
+                        </div>
+                        <div class="col-md-9">
+                            <h5 class="card-title">{{this.title}}</h5>
+                            <p class="card-text">{{this.description}}</p>
+                            <p class="card-text"><strong>${{this.price}}</strong></p>
+                            <p class="card-text">Stock: {{this.stock}} | Categoría: {{this.category}}</p>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct('{{this._id}}')">🗑️ Eliminar</button>
+                            <button class="btn btn-success btn-sm ms-2" onclick="addToCart('{{this._id}}')">🛒 Agregar al Carrito</button>
+                        </div>
                     </div>
                 </div>
             </div>
             {{/each}}
         </div>
     </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3>➕ Agregar Producto</h3>
+            </div>
+            <div class="card-body">
+                <form id="add-product-form">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Precio ($)</label>
+                        <input type="number" class="form-control" id="price" step="0.01" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Categoría</label>
+                        <select class="form-control" id="category" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option value="electronics">Electrónicos</option>
+                            <option value="clothing">Ropa</option>
+                            <option value="home">Hogar</option>
+                            <option value="books">Libros</option>
+                            <option value="sports">Deportes</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">✨ Agregar Producto</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="/js/realTimeProducts.js"></script>
+<script>
+const socket = io();
 
+socket.on('updateProducts', (products) => {
+    const container = document.getElementById('products-container');
+    container.innerHTML = '';
+    
+    products.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.className = 'card mb-3';
+        productDiv.setAttribute('data-product-id', product._id);
+        productDiv.innerHTML = `
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src="${product.thumbnails ? product.thumbnails[0] : 'https://via.placeholder.com/150x100/6c757d/ffffff?text=Sin+Imagen'}" 
+                             class="img-fluid rounded" alt="${product.title}">
+                    </div>
+                    <div class="col-md-9">
+                        <h5 class="card-title">${product.title}</h5>
+                        <p class="card-text">${product.description}</p>
+                        <p class="card-text"><strong>$${product.price}</strong></p>
+                        <p class="card-text">Stock: ${product.stock} | Categoría: ${product.category}</p>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product._id}')">🗑️ Eliminar</button>
+                        <button class="btn btn-success btn-sm ms-2" onclick="addToCart('${product._id}')">🛒 Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(productDiv);
+    });
+});
+
+document.getElementById('add-product-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const productData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        price: parseFloat(document.getElementById('price').value),
+        stock: parseInt(document.getElementById('stock').value),
+        category: document.getElementById('category').value,
+        status: true
+    };
+    
+    socket.emit('addProduct', productData);
+    
+    // Limpiar formulario
+    document.getElementById('add-product-form').reset();
+    
+    // Mostrar mensaje de éxito
+    alert('✅ Producto agregado exitosamente');
+});
+
+function deleteProduct(productId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+        socket.emit('deleteProduct', productId);
+        alert('🗑️ Producto eliminado');
+    }
+}
+
+function addToCart(productId) {
+    fetch(`/api/v1/carts/1/products/${productId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('🛒 Producto agregado al carrito');
+        } else {
+            alert('❌ Error al agregar al carrito');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Error de conexión');
+    });
+}
+</script>

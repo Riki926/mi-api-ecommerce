@@ -1,30 +1,118 @@
-# Dependencias
+# Dependencies
 node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Archivos de ambiente
+# Coverage
+coverage/
+.nyc_output/
+
+# Build
+dist/
+build/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Dependencies lock files
+package-lock.json
+yarn.lock
+
+# Local development
+.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# Environment files (except .env.example which should be committed)
+!.env.example
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+yarn-integrity
+
+# Local development
+.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# Production build files
+build/
+dist/
+
+# Environment files (except .env.example which should be committed)
+!.env.example
+.yarn-integrity
+
+# dotenv environment variables file
 .env
+.env.test
 .env.local
-.env.*.local
+.env.production
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 # Logs
 logs
 *.log
-npm-debug.log*
 
-# Archivos del sistema operativo
-.DS_Store
-Thumbs.db
+# Data files (ya no necesarios con MongoDB)
+data/
+*.json
 
-# Archivos temporales
-*.tmp
-*.temp
-
-# Archivos de datos generados
-data/*.json
-!data/.gitkeep
-
-# IDE y editores
-.idea/
-.vscode/
-*.swp
-*.swo
+# Temporary files
+tmp/
+temp/

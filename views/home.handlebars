@@ -1,28 +1,39 @@
-<h1>Productos</h1>
-
-<div class="row">
-    {{#each products}}
-    <div class="col-md-4 mb-4">
-        <div class="card">
-            {{#if thumbnails.[0]}}
-            <img src="{{thumbnails.[0]}}" class="card-img-top" alt="{{title}}">
-            {{/if}}
-            <div class="card-body">
-                <h5 class="card-title">{{title}}</h5>
-                <p class="card-text">{{description}}</p>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Código: {{code}}</li>
-                    <li class="list-group-item">Precio: ${{price}}</li>
-                    <li class="list-group-item">Stock: {{stock}}</li>
-                    <li class="list-group-item">Categoría: {{category}}</li>
-                </ul>
+<div class="container mt-4">
+    <h1 class="mb-4">E-commerce API - Productos</h1>
+    
+    <div class="row">
+        {{#each products}}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{thumbnails.[0]}}" class="card-img-top" alt="{{title}}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{title}}</h5>
+                    <p class="card-text">{{description}}</p>
+                    <p class="card-text">
+                        <strong>Precio: ${{price}}</strong><br>
+                        <small class="text-muted">Stock: {{stock}} | Categoría: {{category}}</small>
+                    </p>
+                    <a href="/products/{{_id}}" class="btn btn-primary">Ver detalles</a>
+                    <button class="btn btn-success ms-2" onclick="addToCart('{{_id}}')">Agregar al carrito</button>
+                </div>
             </div>
         </div>
+        {{/each}}
     </div>
-    {{else}}
-    <div class="col-12">
-        <p>No hay productos disponibles.</p>
+    
+    <div class="mt-4">
+        <h3>Enlaces útiles:</h3>
+        <ul class="list-group">
+            <li class="list-group-item"><a href="/api/v1/products">API de productos (JSON)</a></li>
+            <li class="list-group-item"><a href="/api/v1/health">Health check</a></li>
+            <li class="list-group-item"><a href="/carts/1">Ver carrito demo</a></li>
+        </ul>
     </div>
-    {{/each}}
 </div>
+
+<script>
+function addToCart(productId) {
+    alert('Producto ' + productId + ' agregado al carrito (demo)');
+}
+</script>
 
