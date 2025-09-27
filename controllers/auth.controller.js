@@ -120,8 +120,10 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.updateDetails = asyncHandler(async (req, res, next) => {
   const fieldsToUpdate = {
-    name: req.body.name,
-    email: req.body.email
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    email: req.body.email,
+    age: req.body.age
   };
 
   const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {

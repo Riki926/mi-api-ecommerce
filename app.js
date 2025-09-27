@@ -12,20 +12,26 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const { engine } = require('express-handlebars');
 const dotenv = require('dotenv');
+const passport = require('passport');
 
 // Cargar variables de entorno
-dotenv.config({ path: './config/config.env' });
+dotenv.config();
 
 // Importar rutas
 const productsRouter = require('./src/routes/products.router');
 const cartsRouter = require('./src/routes/carts.router');
 const authRouter = require('./routes/auth');
+const sessionsRouter = require('./routes/sessions');
+const usersRouter = require('./routes/users');
 const viewsRouter = require('./routes/views');
 
 // Importar utilidades
 const { connectMongo } = require('./src/db/mongo');
 const errorHandler = require('./middleware/error');
 const logger = require('./middleware/logger');
+
+// Configurar Passport
+require('./config/passport');
 
 // Inicializar la aplicación
 const app = express();
@@ -41,6 +47,9 @@ app.set('io', io);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
+
+// Inicializar Passport
+app.use(passport.initialize());
 
 // Sanitizar datos contra NoSQL injection
 app.use(mongoSanitize());
@@ -156,6 +165,8 @@ function configureWebSockets() {
 app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/carts', cartsRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', usersRouter);
+app.use('/api/sessions', sessionsRouter);
 
 // Rutas de vistas
 app.use('/', viewsRouter);
@@ -199,6 +210,8 @@ app.use((req, res) => {
 // Configuración de WebSockets
 io.on('connection', (socket) => {
     // Enviar lista inicial si se requiere
+});
+
 // Iniciar servidor
 async function startServer() {
   try {
