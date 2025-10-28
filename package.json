@@ -1,45 +1,26 @@
 {
-  "name": "mi-api-ecommerce",
+  "name": "ecommerce-api",
   "version": "1.0.0",
-  "description": "API de E-commerce con Node.js y Express",
-  "main": "app.js",
+  "description": "E-commerce API with Node.js, Express, MongoDB and JWT Authentication",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "seed": "node scripts/seed.js"
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
   },
-  "keywords": [
-    "api",
-    "ecommerce",
-    "nodejs",
-    "express"
-  ],
+  "keywords": ["ecommerce", "api", "express", "mongodb", "jwt"],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^6.0.0",
-    "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
     "express": "^4.18.2",
-    "express-handlebars": "^7.1.3",
-    "express-mongo-sanitize": "^2.2.0",
-    "express-rate-limit": "^8.1.0",
-    "helmet": "^8.1.0",
-    "hpp": "^0.2.3",
+    "mongoose": "^7.6.3",
+    "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2",
-    "mongodb-memory-server": "^10.2.0",
-    "mongoose": "^8.0.3",
-    "mongoose-paginate-v2": "^1.9.1",
-    "morgan": "^1.10.1",
-    "nodemailer": "^7.0.6",
-    "passport": "^0.7.0",
+    "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
-    "passport-local": "^1.0.0",
-    "socket.io": "^4.8.1",
-    "winston": "^3.17.0",
-    "xss-clean": "^0.1.4"
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.7"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
